@@ -1,0 +1,442 @@
+.app {
+  min-height: 100vh;
+  background: #f0f2f5;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.generator-container {
+  width: 100%;
+  max-width: 1400px;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.split-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.form-section {
+  flex: 0 0 350px;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 2rem;
+}
+
+.grid-section {
+  flex: 1;
+}
+
+.generator-header {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.generator-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+.generator-header p {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.generator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  font-family: inherit;
+  background: #f9fafb;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #000;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+
+.generate-button {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: #000000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  margin-top: 1rem;
+}
+
+.generate-button:hover:not(:disabled) {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+.generate-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Updated Grid for 4 items (2x2) */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+  gap: 1.5rem;
+}
+
+.grid-item-wrapper {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 250px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.grid-item-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.grid-item-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* Prevent interaction with content */
+}
+
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  backdrop-filter: blur(2px);
+}
+
+.grid-item-wrapper:hover .grid-overlay {
+  opacity: 1;
+}
+
+.action-button {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 100px;
+}
+
+.download-btn {
+  background: white;
+  color: black;
+}
+
+.download-btn:hover {
+  background: #f0f0f0;
+}
+
+.copy-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.copy-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Component specific overrides for grid display */
+.grid-item-content .email-notification {
+  transform-origin: center;
+  max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .split-layout {
+    flex-direction: column;
+  }
+  
+  .form-section {
+    flex: none;
+    width: 100%;
+    position: static;
+  }
+  
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+/* Include previous notification styles below */
+
+/* Payment Notification Styles (Dark Theme) */
+.payment-notification {
+  background: #000000;
+  border-radius: 28px;
+  padding: 18px 24px;
+  min-width: 360px;
+  max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: white;
+}
+
+.notification-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.notification-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.notification-body {
+  font-size: 15px;
+  color: #e5e5e5;
+  line-height: 1.3;
+}
+
+/* Email Notification Styles (Gmail Web Like) */
+.email-notification {
+  background: white;
+  width: 100%;
+  max-width: 800px;
+  font-family: Roboto, Arial, sans-serif;
+  color: #202124;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Added subtle shadow for white-on-white contrast */
+}
+
+.email-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.email-subject-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.email-subject-line h1 {
+  font-size: 22px; 
+  font-weight: 400;
+  margin: 0;
+  color: #202124;
+}
+
+.inbox-badge {
+  background: #dddddd;
+  color: #444;
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.x-badge {
+  background: #dddddd;
+  color: #666;
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  display: none; 
+}
+
+.email-meta-icons {
+  display: flex;
+  gap: 16px;
+}
+
+/* Sender Row */
+.email-sender-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.sender-profile {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.sender-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f5f8fa;
+}
+
+.sender-avatar-img svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sender-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.sender-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #202124;
+}
+
+.sender-email {
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.email-to {
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.email-date {
+  font-size: 12px;
+  color: #5f6368;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.action-icons {
+  display: flex;
+  gap: 12px;
+  font-size: 18px;
+  color: #5f6368;
+}
+
+/* Email Body */
+.email-body-content {
+  padding-left: 52px; 
+}
+
+.x-logo-container {
+  margin-bottom: 24px;
+}
+
+.x-logo-box {
+  width: 48px;
+  height: 48px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.x-logo-svg {
+  width: 28px;
+  height: 28px;
+  fill: #fff;
+}
+
+.greeting, .amount-text, .thank-you, .signature {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  color: #222;
+}
+
+.amount-text {
+  white-space: pre-wrap;
+}
+
+.signature {
+  font-weight: 700;
+  margin-top: 24px;
+}
+
+@media (max-width: 600px) {
+  .email-body-content {
+    padding-left: 0;
+  }
+}
