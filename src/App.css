@@ -297,6 +297,43 @@
   }
 }
 
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem;
+  }
+
+  .form-section {
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .generator-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .generator-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .grid-item-wrapper {
+    zoom: 0.35;
+    padding: 0.5rem;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-item-wrapper {
+    zoom: 0.28;
+  }
+}
+
 /* Payment Notification Styles (Dark Theme) */
 .payment-notification {
   background: #000000;

@@ -147,7 +147,7 @@ export function PaymentGenerator() {
     <div className="generator-container split-layout">
       <div className="form-section">
         <div className="generator-header">
-          <h1>Generate Payment Screenshot</h1>
+          <h1>Payout Screenshot</h1>
           <p>Create custom "You got paid!" notifications</p>
         </div>
 
