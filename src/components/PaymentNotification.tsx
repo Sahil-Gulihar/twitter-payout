@@ -1,8 +1,9 @@
 interface PaymentNotificationProps {
   amount: string
+  variant?: 'default' | 'dark-blue' | 'mobile'
 }
 
-export function PaymentNotification({ amount }: PaymentNotificationProps) {
+export function PaymentNotification({ amount, variant = 'default' }: PaymentNotificationProps) {
   const numAmount = parseFloat(amount) || 0
   const decimalPlaces = amount.includes('.') ? amount.split('.')[1]?.length || 2 : 2
   const maxDecimals = Math.max(2, Math.min(7, decimalPlaces))
@@ -15,7 +16,7 @@ export function PaymentNotification({ amount }: PaymentNotificationProps) {
   }).format(numAmount)
 
   return (
-    <div className="payment-notification">
+    <div className={`payment-notification ${variant === 'dark-blue' ? 'notification-dark-blue' : ''}`}>
       <div className="notification-icon">
         <span role="img" aria-label="party popper">🎉</span>
       </div>

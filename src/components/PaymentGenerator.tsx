@@ -2,18 +2,20 @@ import { useState } from 'react'
 import html2canvas from 'html2canvas'
 import { PaymentNotification } from './PaymentNotification'
 import { EmailNotification } from './EmailNotification'
+import { Toast } from './Toast'
 
 interface ScreenshotData {
   amount: string
   type: 'notification' | 'email'
   username?: string
+  variant?: 'default' | 'dark-blue' | 'mobile'
 }
 
 const defaultScreenshots: ScreenshotData[] = [
-  { amount: '2.34', type: 'notification' },
-  { amount: '194.1599137', type: 'email', username: 'fchollet' },
-  { amount: '310.61', type: 'notification' },
-  { amount: '53.13', type: 'email', username: 'ravihanda' },
+  { amount: '123', type: 'notification' },
+  { amount: '123', type: 'email', username: 'fchollet' },
+  { amount: '123', type: 'email', username: 'ravihanda', variant: 'mobile' },
+  { amount: '123', type: 'notification', variant: 'dark-blue' },
 ]
 
 export function PaymentGenerator() {
@@ -21,6 +23,15 @@ export function PaymentGenerator() {
   const [amount, setAmount] = useState('')
   const [screenshots, setScreenshots] = useState<ScreenshotData[]>(defaultScreenshots)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [toast, setToast] = useState({ message: '', isVisible: false })
+
+  function showToast(message: string) {
+    setToast({ message, isVisible: true })
+  }
+
+  function hideToast() {
+    setToast(prev => ({ ...prev, isVisible: false }))
+  }
 
   function formatAmount(value: string): string {
     return value.replace(/[^0-9.]/g, '')
@@ -40,7 +51,7 @@ export function PaymentGenerator() {
 
     try {
       const canvas = await html2canvas(content, {
-        backgroundColor: item.type === 'email' ? '#ffffff' : '#000000',
+        backgroundColor: item.type === 'email' ? '#ffffff' : (item.variant === 'dark-blue' ? '#141d26' : '#000000'),
         scale: 2,
         logging: false,
         useCORS: true,
@@ -61,6 +72,7 @@ export function PaymentGenerator() {
       link.download = `got-paid-${item.username || 'user'}-${item.amount}.png`
       link.href = dataUrl
       link.click()
+      showToast('Screenshot downloaded!')
     }
     setIsGenerating(false)
   }
@@ -86,7 +98,7 @@ export function PaymentGenerator() {
 
     try {
       const canvas = await html2canvas(content, {
-        backgroundColor: item.type === 'email' ? '#ffffff' : '#000000',
+        backgroundColor: item.type === 'email' ? '#ffffff' : (item.variant === 'dark-blue' ? '#141d26' : '#000000'),
         scale: 2,
         logging: false,
         useCORS: true,
@@ -98,14 +110,15 @@ export function PaymentGenerator() {
           await navigator.clipboard.write([
             new ClipboardItem({ 'image/png': blob })
           ])
-          alert('Copied to clipboard!')
+          showToast('Copied to clipboard!')
         } catch (err) {
           console.error('Failed to copy:', err)
-          alert('Failed to copy to clipboard')
+          showToast('Failed to copy')
         }
       })
     } catch (error) {
       console.error('Copy error:', error)
+      showToast('Error copying image')
     } finally {
       setIsGenerating(false)
     }
@@ -113,19 +126,20 @@ export function PaymentGenerator() {
 
   function handleGenerate() {
     if (!amount || parseFloat(amount) <= 0) {
-      alert('Please enter a valid amount')
+      showToast('Please enter a valid amount')
       return
     }
 
     // Generate 4 variations based on the input amount
     const newScreenshots: ScreenshotData[] = [
-      { amount, type: 'notification' }, // Push notification
-      { amount, type: 'email', username: username || 'user' }, // Email with username
-      { amount, type: 'notification' }, // Another push notification (can be customized if needed, currently same as first)
-      { amount, type: 'email', username: username || 'user' }, // Another email
+      { amount, type: 'notification' }, // Standard black notification
+      { amount, type: 'email', username: username || 'user' }, // Standard email
+      { amount, type: 'email', username: username || 'user', variant: 'mobile' }, // Mobile email layout
+      { amount, type: 'notification', variant: 'dark-blue' }, // Dark blue notification variant
     ]
 
     setScreenshots(newScreenshots)
+    showToast('Generated 4 new styles!')
     // Don't clear inputs so user can regenerate easily
   }
 
@@ -167,7 +181,7 @@ export function PaymentGenerator() {
             disabled={!amount || parseFloat(amount) <= 0}
             className="generate-button"
           >
-            Generate All 4 Styles
+            Generate 
           </button>
         </div>
       </div>
@@ -180,10 +194,14 @@ export function PaymentGenerator() {
                 {screenshot.type === 'email' ? (
                   <EmailNotification 
                     amount={screenshot.amount} 
-                    username={screenshot.username || ''} 
+                    username={screenshot.username || ''}
+                    variant={screenshot.variant}
                   />
                 ) : (
-                  <PaymentNotification amount={screenshot.amount} />
+                  <PaymentNotification 
+                    amount={screenshot.amount} 
+                    variant={screenshot.variant as any}
+                  />
                 )}
               </div>
               <div className="grid-overlay">
@@ -206,6 +224,12 @@ export function PaymentGenerator() {
           ))}
         </div>
       </div>
+
+      <Toast 
+        message={toast.message} 
+        isVisible={toast.isVisible} 
+        onClose={hideToast} 
+      />
     </div>
   )
 }
