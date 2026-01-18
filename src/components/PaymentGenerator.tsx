@@ -37,40 +37,57 @@ export function PaymentGenerator() {
     return value.replace(/[^0-9.]/g, '')
   }
 
-  async function captureScreenshot(index: number): Promise<string | null> {
+  async function generateCanvas(index: number): Promise<HTMLCanvasElement | null> {
     const element = document.getElementById(`screenshot-${index}`)
     if (!element) return null
 
-    // Find the actual content wrapper to capture
     const item = screenshots[index]
-    const content = element.querySelector(
+    const originalContent = element.querySelector(
       item.type === 'email' ? '.email-notification' : '.payment-notification'
     ) as HTMLElement || element.firstElementChild as HTMLElement
 
-    if (!content) return null
+    if (!originalContent) return null
+
+    // Create a clone to render off-screen without zoom interference
+    const clone = originalContent.cloneNode(true) as HTMLElement
+    
+    // Create wrapper to preserve .grid-item-content styles context
+    const wrapper = document.createElement('div')
+    wrapper.className = 'grid-item-content'
+    wrapper.style.position = 'absolute'
+    wrapper.style.top = '-9999px'
+    wrapper.style.left = '-9999px'
+    wrapper.style.zoom = '1' // Ensure no zoom
+    
+    wrapper.appendChild(clone)
+    document.body.appendChild(wrapper)
 
     try {
-      const canvas = await html2canvas(content, {
+      const canvas = await html2canvas(clone, {
         backgroundColor: item.type === 'email' ? '#ffffff' : (item.variant === 'dark-blue' ? '#141d26' : '#000000'),
         scale: 2,
         logging: false,
         useCORS: true,
       })
-      return canvas.toDataURL('image/png')
+      return canvas
     } catch (error) {
       console.error('Capture error:', error)
       return null
+    } finally {
+      if (document.body.contains(wrapper)) {
+        document.body.removeChild(wrapper)
+      }
     }
   }
 
   async function handleDownload(index: number) {
     setIsGenerating(true)
-    const dataUrl = await captureScreenshot(index)
-    if (dataUrl) {
+    const canvas = await generateCanvas(index)
+    if (canvas) {
       const item = screenshots[index]
       const link = document.createElement('a')
       link.download = `got-paid-${item.username || 'user'}-${item.amount}.png`
-      link.href = dataUrl
+      link.href = canvas.toDataURL('image/png')
       link.click()
       showToast('Screenshot downloaded!')
     }
@@ -79,31 +96,15 @@ export function PaymentGenerator() {
 
   async function handleCopy(index: number) {
     setIsGenerating(true)
-    const element = document.getElementById(`screenshot-${index}`)
-    if (!element) {
-        setIsGenerating(false)
-        return
-    }
+    const canvas = await generateCanvas(index)
     
-    // Find content similar to captureScreenshot
-    const item = screenshots[index]
-    const content = element.querySelector(
-        item.type === 'email' ? '.email-notification' : '.payment-notification'
-    ) as HTMLElement || element.firstElementChild as HTMLElement
-
-    if (!content) {
-        setIsGenerating(false)
-        return
+    if (!canvas) {
+      setIsGenerating(false)
+      showToast('Error generating image')
+      return
     }
 
     try {
-      const canvas = await html2canvas(content, {
-        backgroundColor: item.type === 'email' ? '#ffffff' : (item.variant === 'dark-blue' ? '#141d26' : '#000000'),
-        scale: 2,
-        logging: false,
-        useCORS: true,
-      })
-      
       canvas.toBlob(async (blob) => {
         if (!blob) return
         try {
